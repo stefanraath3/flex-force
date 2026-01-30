@@ -5,12 +5,16 @@ import { BoardControls } from "@/app/components/BoardControls";
 import { KanbanBoard } from "@/app/components/Board/KanbanBoard";
 import { Dashboard } from "@/app/components/Dashboard/Dashboard";
 import { DashboardHeader } from "@/app/components/Dashboard/DashboardHeader";
+import { JobListings } from "@/app/components/Recruitment/JobListings";
+import { RecruitmentHeader } from "@/app/components/Recruitment/RecruitmentHeader";
 import { Icons } from "@/app/components/Icons";
+import { Job, jobs } from "@/app/data/mockData";
 
 export type Page = "dashboard" | "recruitment" | "employees" | "payroll";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>("dashboard");
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [currentView, setCurrentView] = useState<"board" | "list" | "table">(
     "board"
   );
@@ -27,29 +31,51 @@ export default function App() {
     // Implementation for adding applicant would go here
   };
 
+  const handleJobClick = (job: Job) => {
+    setSelectedJob(job);
+  };
+
+  const handleBackToJobs = () => {
+    setSelectedJob(null);
+    setSearchTerm("");
+  };
+
+  const handlePageChange = (page: Page) => {
+    setCurrentPage(page);
+    // Reset job selection when changing pages
+    if (page !== "recruitment") {
+      setSelectedJob(null);
+    }
+  };
+
   const renderPageContent = () => {
     switch (currentPage) {
       case "dashboard":
         return <Dashboard />;
       case "recruitment":
-        return (
-          <>
-            <BoardControls
-              currentView={currentView}
-              onViewChange={setCurrentView}
-              onSearch={handleSearch}
-              onAddApplicant={handleAddApplicant}
-            />
-            {currentView === "board" ? (
-              <KanbanBoard searchTerm={searchTerm} />
-            ) : (
-              <div className="flex-1 flex items-center justify-center text-[#71717a] p-4">
-                {currentView.charAt(0).toUpperCase() + currentView.slice(1)} view
-                is not implemented yet.
-              </div>
-            )}
-          </>
-        );
+        // If a job is selected, show the Kanban board for that job
+        if (selectedJob) {
+          return (
+            <>
+              <BoardControls
+                currentView={currentView}
+                onViewChange={setCurrentView}
+                onSearch={handleSearch}
+                onAddApplicant={handleAddApplicant}
+              />
+              {currentView === "board" ? (
+                <KanbanBoard searchTerm={searchTerm} />
+              ) : (
+                <div className="flex-1 flex items-center justify-center text-[#71717a] p-4">
+                  {currentView.charAt(0).toUpperCase() + currentView.slice(1)} view
+                  is not implemented yet.
+                </div>
+              )}
+            </>
+          );
+        }
+        // Otherwise, show the job listings
+        return <JobListings jobs={jobs} onJobClick={handleJobClick} />;
       default:
         return (
           <div className="flex-1 flex items-center justify-center text-[#71717a] p-4">
@@ -65,7 +91,12 @@ export default function App() {
       case "dashboard":
         return <DashboardHeader />;
       case "recruitment":
-        return <Header />;
+        if (selectedJob) {
+          return (
+            <Header jobTitle={selectedJob.title} onBackClick={handleBackToJobs} />
+          );
+        }
+        return <RecruitmentHeader jobCount={jobs.length} />;
       default:
         return <Header />;
     }
@@ -95,7 +126,7 @@ export default function App() {
           onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
           collapsed={sidebarCollapsed}
           currentPage={currentPage}
-          onPageChange={setCurrentPage}
+          onPageChange={handlePageChange}
         />
       </div>
 

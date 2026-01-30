@@ -10,6 +10,7 @@ interface ColumnProps {
   dotColor: string; // The dot color
   applicants: Applicant[];
   onDrop: (item: { id: string }, status: ApplicantStatus) => void;
+  onApplicantClick?: (applicant: Applicant) => void;
 }
 
 export function Column({
@@ -18,6 +19,7 @@ export function Column({
   dotColor,
   applicants,
   onDrop,
+  onApplicantClick,
 }: ColumnProps) {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "APPLICANT",
@@ -57,7 +59,11 @@ export function Column({
       {/* Cards Area */}
       <div className="flex flex-col gap-2">
         {applicants.map((applicant) => (
-          <ApplicantCard key={applicant.id} applicant={applicant} />
+          <ApplicantCard
+            key={applicant.id}
+            applicant={applicant}
+            onClick={onApplicantClick}
+          />
         ))}
       </div>
 

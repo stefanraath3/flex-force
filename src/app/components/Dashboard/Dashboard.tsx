@@ -13,43 +13,38 @@ interface StatCardProps {
 
 function StatCard({ icon, iconBg, label, value, change }: StatCardProps) {
   return (
-    <div className="bg-white rounded-[12px] p-[16px] border border-[#e4e4e7] flex flex-col gap-[12px]">
-      <div className="flex items-center justify-between">
-        <div
-          className={clsx(
-            "size-[40px] rounded-[8px] flex items-center justify-center",
-            iconBg
-          )}
-        >
-          {icon}
-        </div>
-        {change && (
-          <div
-            className={clsx(
-              "px-[8px] py-[4px] rounded-[6px] text-[12px] font-semibold flex items-center gap-[4px]",
-              change.positive
-                ? "bg-[#dcfce7] text-[#16a34a]"
-                : "bg-[#fee2e2] text-[#dc2626]"
-            )}
-          >
-            <span>{change.positive ? "↑" : "↓"}</span>
-            <span>{Math.abs(change.value)}%</span>
-          </div>
+    <div className="flex items-center gap-4">
+      <div
+        className={clsx(
+          "size-12 rounded-xl flex items-center justify-center shrink-0",
+          iconBg
         )}
+      >
+        {icon}
       </div>
-      <div>
-        <p className="font-bold text-[#18181b] text-[28px] leading-none">
-          {value}
-        </p>
-        <p className="font-medium text-[#71717a] text-[14px] mt-[4px]">
-          {label}
-        </p>
+      <div className="flex flex-col">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-[#18181b] text-2xl tabular-nums">
+            {value}
+          </span>
+          {change && (
+            <span
+              className={clsx(
+                "text-xs font-medium",
+                change.positive ? "text-[#10b981]" : "text-[#ef4444]"
+              )}
+            >
+              {change.positive ? "↑" : "↓"} {Math.abs(change.value)}%
+            </span>
+          )}
+        </div>
+        <span className="text-[#71717a] text-sm font-medium">{label}</span>
       </div>
     </div>
   );
 }
 
-interface JobCardProps {
+interface JobRowProps {
   title: string;
   department: string;
   departmentColor: string;
@@ -58,57 +53,61 @@ interface JobCardProps {
   status: "active" | "paused" | "closed";
 }
 
-function JobCard({
+function JobRow({
   title,
   department,
   departmentColor,
   applicants,
   daysLeft,
   status,
-}: JobCardProps) {
+}: JobRowProps) {
   const statusStyles = {
-    active: { bg: "bg-[#dcfce7]", text: "text-[#16a34a]", label: "Active" },
-    paused: { bg: "bg-[#fef3c7]", text: "text-[#d97706]", label: "Paused" },
-    closed: { bg: "bg-[#f4f4f5]", text: "text-[#71717a]", label: "Closed" },
+    active: "text-[#10b981]",
+    paused: "text-[#f59e0b]",
+    closed: "text-[#71717a]",
   };
 
   return (
-    <div className="bg-white rounded-[12px] p-[14px] border border-[#e4e4e7] hover:border-[#9440ff] transition-colors cursor-pointer">
-      <div className="flex items-start justify-between mb-[10px]">
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-[#27272a] text-[14px] truncate">
+    <div className="flex items-center justify-between py-4 border-b border-[#f4f4f5] last:border-0 hover:bg-[#fafafa] -mx-1 px-1 rounded-lg transition-colors cursor-pointer group">
+      <div className="flex items-center gap-4 min-w-0 flex-1">
+        <div
+          className="size-2.5 rounded-full shrink-0"
+          style={{ backgroundColor: departmentColor }}
+        />
+        <div className="min-w-0">
+          <p className="font-semibold text-[#18181b] text-sm group-hover:text-[#9440ff] transition-colors truncate">
             {title}
           </p>
-          <div className="flex items-center gap-[6px] mt-[4px]">
-            <div
-              className="size-[10px] rounded-[2px]"
-              style={{ backgroundColor: departmentColor }}
-            />
-            <span className="font-medium text-[#71717a] text-[12px]">
-              {department}
-            </span>
-          </div>
+          <p className="text-[#71717a] text-xs mt-0.5">{department}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-8 shrink-0">
+        <div className="text-right hidden sm:block">
+          <p className="text-[#18181b] text-sm font-medium tabular-nums">
+            {applicants}
+          </p>
+          <p className="text-[#a1a1aa] text-xs">applicants</p>
+        </div>
+        <div className="text-right hidden md:block">
+          <p className="text-[#18181b] text-sm font-medium tabular-nums">
+            {daysLeft}
+          </p>
+          <p className="text-[#a1a1aa] text-xs">days left</p>
         </div>
         <div
           className={clsx(
-            statusStyles[status].bg,
-            statusStyles[status].text,
-            "px-[8px] py-[2px] rounded-[4px] text-[11px] font-semibold shrink-0"
+            "text-xs font-medium capitalize w-14",
+            statusStyles[status]
           )}
         >
-          {statusStyles[status].label}
+          {status}
         </div>
-      </div>
-      <div className="flex items-center gap-[12px] text-[12px] text-[#71717a]">
-        <span className="font-medium">{applicants} applicants</span>
-        <span>•</span>
-        <span className="font-medium">{daysLeft} days left</span>
       </div>
     </div>
   );
 }
 
-interface InterviewItemProps {
+interface InterviewRowProps {
   name: string;
   role: string;
   time: string;
@@ -116,53 +115,48 @@ interface InterviewItemProps {
   type: "video" | "phone" | "onsite";
 }
 
-function InterviewItem({ name, role, time, avatar, type }: InterviewItemProps) {
-  const typeStyles = {
-    video: { bg: "bg-[#ede9fe]", icon: "📹", label: "Video" },
-    phone: { bg: "bg-[#dbeafe]", icon: "📞", label: "Phone" },
-    onsite: { bg: "bg-[#fef3c7]", icon: "🏢", label: "On-site" },
+function InterviewRow({ name, role, time, avatar, type }: InterviewRowProps) {
+  const typeIcons = {
+    video: <Icons.Calendar className="size-4 text-[#9440ff]" />,
+    phone: <Icons.Calendar className="size-4 text-[#3b82f6]" />,
+    onsite: <Icons.Calendar className="size-4 text-[#f59e0b]" />,
   };
 
   return (
-    <div className="flex items-center gap-[12px] p-[12px] bg-white rounded-[10px] border border-[#e4e4e7] hover:border-[#9440ff] transition-colors cursor-pointer">
-      <div className="size-[40px] rounded-full overflow-hidden shrink-0">
-        <ImageWithFallback
-          src={avatar}
-          alt={name}
-          className="w-full h-full object-cover"
-        />
+    <div className="flex items-center justify-between py-3 hover:bg-[#fafafa] -mx-2 px-2 rounded-lg transition-colors cursor-pointer group">
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="size-9 rounded-full overflow-hidden shrink-0 ring-2 ring-white">
+          <ImageWithFallback
+            src={avatar}
+            alt={name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="min-w-0">
+          <p className="font-medium text-[#18181b] text-sm truncate group-hover:text-[#9440ff] transition-colors">
+            {name}
+          </p>
+          <p className="text-[#a1a1aa] text-xs truncate">{role}</p>
+        </div>
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-[#27272a] text-[14px] truncate">
-          {name}
-        </p>
-        <p className="font-medium text-[#71717a] text-[12px] truncate">
-          {role}
-        </p>
-      </div>
-      <div className="flex flex-col items-end gap-[4px] shrink-0">
-        <span className="font-semibold text-[#27272a] text-[12px]">{time}</span>
-        <span
-          className={clsx(
-            typeStyles[type].bg,
-            "px-[6px] py-[2px] rounded-[4px] text-[10px] font-medium text-[#52525b]"
-          )}
-        >
-          {typeStyles[type].label}
+      <div className="flex items-center gap-3 shrink-0">
+        <span className="text-[#18181b] text-sm font-semibold tabular-nums">
+          {time}
         </span>
+        {typeIcons[type]}
       </div>
     </div>
   );
 }
 
-interface ActivityItemProps {
+interface ActivityRowProps {
   action: string;
   target: string;
   time: string;
   type: "application" | "interview" | "hire" | "rejection";
 }
 
-function ActivityItem({ action, target, time, type }: ActivityItemProps) {
+function ActivityRow({ action, target, time, type }: ActivityRowProps) {
   const typeColors = {
     application: "bg-[#9440ff]",
     interview: "bg-[#f59e0b]",
@@ -171,20 +165,51 @@ function ActivityItem({ action, target, time, type }: ActivityItemProps) {
   };
 
   return (
-    <div className="flex items-start gap-[12px] py-[10px]">
-      <div
-        className={clsx(
-          "size-[8px] rounded-full mt-[6px] shrink-0",
-          typeColors[type]
-        )}
-      />
-      <div className="flex-1 min-w-0">
-        <p className="text-[13px] text-[#27272a]">
-          <span className="font-semibold">{action}</span>{" "}
+    <div className="flex items-start gap-3 py-3">
+      <div className="flex flex-col items-center pt-1.5">
+        <div className={clsx("size-2 rounded-full", typeColors[type])} />
+        <div className="w-px h-full bg-[#e4e4e7] mt-2" />
+      </div>
+      <div className="flex-1 min-w-0 pb-2">
+        <p className="text-sm text-[#18181b]">
+          <span className="font-medium">{action}</span>{" "}
           <span className="text-[#71717a]">{target}</span>
         </p>
-        <p className="text-[11px] text-[#a1a1aa] mt-[2px]">{time}</p>
+        <p className="text-xs text-[#a1a1aa] mt-1">{time}</p>
       </div>
+    </div>
+  );
+}
+
+function PipelineItem({
+  label,
+  count,
+  total,
+  color,
+}: {
+  label: string;
+  count: number;
+  total: number;
+  color: string;
+}) {
+  const percentage = Math.round((count / total) * 100);
+
+  return (
+    <div className="flex items-center gap-4">
+      <div
+        className="size-2.5 rounded-full shrink-0"
+        style={{ backgroundColor: color }}
+      />
+      <span className="text-sm text-[#52525b] font-medium w-24">{label}</span>
+      <div className="flex-1 h-2 bg-[#f4f4f5] rounded-full overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all duration-700 ease-out"
+          style={{ width: `${percentage}%`, backgroundColor: color }}
+        />
+      </div>
+      <span className="text-sm font-semibold text-[#18181b] tabular-nums w-12 text-right">
+        {count}
+      </span>
     </div>
   );
 }
@@ -192,27 +217,27 @@ function ActivityItem({ action, target, time, type }: ActivityItemProps) {
 export function Dashboard() {
   const stats = [
     {
-      icon: <Icons.Recruitment className="size-[20px] text-[#9440ff]" />,
+      icon: <Icons.Recruitment className="size-5 text-[#9440ff]" />,
       iconBg: "bg-[#f3e8ff]",
       label: "Total Applicants",
       value: 248,
       change: { value: 12, positive: true },
     },
     {
-      icon: <Icons.Briefcase className="size-[20px] text-[#3b82f6]" />,
+      icon: <Icons.Briefcase className="size-5 text-[#3b82f6]" />,
       iconBg: "bg-[#dbeafe]",
       label: "Active Jobs",
       value: 12,
       change: { value: 3, positive: true },
     },
     {
-      icon: <Icons.Calendar className="size-[20px] text-[#f59e0b]" />,
+      icon: <Icons.Calendar className="size-5 text-[#f59e0b]" />,
       iconBg: "bg-[#fef3c7]",
       label: "Interviews Today",
       value: 8,
     },
     {
-      icon: <Icons.CheckCircle className="size-[20px] text-[#10b981]" />,
+      icon: <Icons.CheckCircle className="size-5 text-[#10b981]" />,
       iconBg: "bg-[#dcfce7]",
       label: "Hired This Month",
       value: 6,
@@ -319,143 +344,101 @@ export function Dashboard() {
     },
   ];
 
+  const pipelineData = [
+    { label: "Shortlisted", count: 86, color: "#71717a" },
+    { label: "Interviewed", count: 42, color: "#ef4444" },
+    { label: "Onboarding", count: 12, color: "#f59e0b" },
+    { label: "Hired", count: 6, color: "#10b981" },
+  ];
+
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-6 scrollbar-thin">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-        {stats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
-        ))}
+    <div className="flex-1 overflow-y-auto scrollbar-thin">
+      {/* Stats Section */}
+      <div className="px-6 py-6 border-b border-[#f4f4f5]">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          {stats.map((stat, index) => (
+            <StatCard key={index} {...stat} />
+          ))}
+        </div>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Active Jobs */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Active Jobs Section */}
-          <div className="bg-white rounded-[12px] border border-[#e4e4e7] p-[16px]">
-            <div className="flex items-center justify-between mb-[16px]">
-              <h2 className="font-bold text-[#18181b] text-[16px]">
+      {/* Main Content */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-0 xl:divide-x divide-[#f4f4f5]">
+        {/* Left Column */}
+        <div className="xl:col-span-2 divide-y divide-[#f4f4f5]">
+          {/* Active Jobs */}
+          <section className="px-6 py-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-[#18181b] text-base">
                 Active Jobs
               </h2>
-              <button className="text-[#9440ff] text-[13px] font-semibold hover:underline">
-                View all
+              <button className="text-[#9440ff] text-sm font-medium hover:underline underline-offset-4">
+                View all →
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-[12px]">
+            <div>
               {activeJobs.map((job, index) => (
-                <JobCard key={index} {...job} />
+                <JobRow key={index} {...job} />
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* Pipeline Overview */}
-          <div className="bg-white rounded-[12px] border border-[#e4e4e7] p-[16px]">
-            <div className="flex items-center justify-between mb-[16px]">
-              <h2 className="font-bold text-[#18181b] text-[16px]">
+          {/* Pipeline */}
+          <section className="px-6 py-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="font-semibold text-[#18181b] text-base">
                 Hiring Pipeline
               </h2>
-              <button className="text-[#9440ff] text-[13px] font-semibold hover:underline">
-                Details
+              <button className="text-[#9440ff] text-sm font-medium hover:underline underline-offset-4">
+                Details →
               </button>
             </div>
-            <div className="space-y-[14px]">
-              <PipelineBar
-                label="Shortlisted"
-                count={86}
-                total={248}
-                color="#71717a"
-              />
-              <PipelineBar
-                label="Interviewed"
-                count={42}
-                total={248}
-                color="#ef4444"
-              />
-              <PipelineBar
-                label="Onboarding"
-                count={12}
-                total={248}
-                color="#f59e0b"
-              />
-              <PipelineBar
-                label="Hired"
-                count={6}
-                total={248}
-                color="#10b981"
-              />
+            <div className="space-y-4">
+              {pipelineData.map((item) => (
+                <PipelineItem key={item.label} {...item} total={248} />
+              ))}
             </div>
-          </div>
+          </section>
         </div>
 
         {/* Right Column */}
-        <div className="space-y-6">
-          {/* Upcoming Interviews */}
-          <div className="bg-white rounded-[12px] border border-[#e4e4e7] p-[16px]">
-            <div className="flex items-center justify-between mb-[14px]">
-              <h2 className="font-bold text-[#18181b] text-[16px]">
-                Today's Interviews
-              </h2>
-              <span className="bg-[#f3e8ff] text-[#9440ff] px-[8px] py-[2px] rounded-full text-[12px] font-semibold">
-                {upcomingInterviews.length}
-              </span>
+        <div className="divide-y divide-[#f4f4f5]">
+          {/* Today's Interviews */}
+          <section className="px-6 py-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <h2 className="font-semibold text-[#18181b] text-base">
+                  Today's Interviews
+                </h2>
+                <span className="bg-[#f3e8ff] text-[#9440ff] px-2 py-0.5 rounded-full text-xs font-semibold">
+                  {upcomingInterviews.length}
+                </span>
+              </div>
             </div>
-            <div className="space-y-[10px]">
+            <div>
               {upcomingInterviews.map((interview, index) => (
-                <InterviewItem key={index} {...interview} />
+                <InterviewRow key={index} {...interview} />
               ))}
             </div>
-          </div>
+          </section>
 
           {/* Recent Activity */}
-          <div className="bg-white rounded-[12px] border border-[#e4e4e7] p-[16px]">
-            <div className="flex items-center justify-between mb-[10px]">
-              <h2 className="font-bold text-[#18181b] text-[16px]">
+          <section className="px-6 py-6">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-semibold text-[#18181b] text-base">
                 Recent Activity
               </h2>
-              <button className="text-[#9440ff] text-[13px] font-semibold hover:underline">
-                View all
+              <button className="text-[#9440ff] text-sm font-medium hover:underline underline-offset-4">
+                View all →
               </button>
             </div>
-            <div className="divide-y divide-[#f4f4f5]">
+            <div>
               {recentActivity.map((activity, index) => (
-                <ActivityItem key={index} {...activity} />
+                <ActivityRow key={index} {...activity} />
               ))}
             </div>
-          </div>
+          </section>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function PipelineBar({
-  label,
-  count,
-  total,
-  color,
-}: {
-  label: string;
-  count: number;
-  total: number;
-  color: string;
-}) {
-  const percentage = Math.round((count / total) * 100);
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-[6px]">
-        <span className="font-medium text-[#52525b] text-[13px]">{label}</span>
-        <span className="font-semibold text-[#27272a] text-[13px]">
-          {count}{" "}
-          <span className="font-normal text-[#a1a1aa]">({percentage}%)</span>
-        </span>
-      </div>
-      <div className="h-[8px] bg-[#f4f4f5] rounded-full overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all duration-500"
-          style={{ width: `${percentage}%`, backgroundColor: color }}
-        />
       </div>
     </div>
   );

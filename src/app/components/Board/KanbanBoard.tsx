@@ -2,6 +2,7 @@ import { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Column } from "./Column";
+import { ApplicantModal } from "./ApplicantModal";
 import {
   Applicant,
   initialApplicants,
@@ -15,11 +16,26 @@ interface KanbanBoardProps {
 
 export function KanbanBoard({ searchTerm }: KanbanBoardProps) {
   const [applicants, setApplicants] = useState<Applicant[]>(initialApplicants);
+  const [selectedApplicant, setSelectedApplicant] =
+    useState<Applicant | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDrop = (item: { id: string }, status: ApplicantStatus) => {
     setApplicants((prev) =>
       prev.map((app) => (app.id === item.id ? { ...app, status } : app))
     );
+  };
+
+  const handleApplicantClick = (applicant: Applicant) => {
+    setSelectedApplicant(applicant);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = (open: boolean) => {
+    setIsModalOpen(open);
+    if (!open) {
+      setSelectedApplicant(null);
+    }
   };
 
   const filteredApplicants = applicants.filter(
@@ -42,10 +58,16 @@ export function KanbanBoard({ searchTerm }: KanbanBoardProps) {
                 (app) => app.status === col.id
               )}
               onDrop={handleDrop}
+              onApplicantClick={handleApplicantClick}
             />
           ))}
         </div>
       </div>
+      <ApplicantModal
+        applicant={selectedApplicant}
+        open={isModalOpen}
+        onOpenChange={handleModalClose}
+      />
     </DndProvider>
   );
 }

@@ -1,16 +1,24 @@
 import { Icons } from "./Icons";
 
-export function Header() {
+interface HeaderProps {
+  jobTitle?: string;
+  onBackClick?: () => void;
+}
+
+export function Header({ jobTitle = "Senior UX Designer", onBackClick }: HeaderProps) {
   return (
     <div className="w-full border-b border-[#e4e4e7] px-4 py-3 flex items-center justify-between shrink-0">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 min-w-0 flex-1">
-        <span className="font-medium text-[#52525b] text-sm hidden sm:inline">
+        <button
+          onClick={onBackClick}
+          className="font-medium text-[#52525b] text-sm hidden sm:inline hover:text-[#9440ff] transition-colors cursor-pointer"
+        >
           Job Board
-        </span>
+        </button>
         <Icons.Slash className="text-[#52525B] w-5 h-5 hidden sm:block shrink-0" />
         <span className="font-medium text-[#27272a] text-sm truncate">
-          Senior UX Designer
+          {jobTitle}
         </span>
       </div>
 
