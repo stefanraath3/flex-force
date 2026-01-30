@@ -2,7 +2,7 @@ import { Icons } from "./Icons";
 
 export function Header() {
   return (
-    <div className="w-full border-b border-[#e4e4e7] px-4 py-3 flex items-center justify-between bg-white shrink-0">
+    <div className="w-full border-b border-[#e4e4e7] px-4 py-3 flex items-center justify-between shrink-0">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 min-w-0 flex-1">
         <span className="font-medium text-[#52525b] text-sm hidden sm:inline">

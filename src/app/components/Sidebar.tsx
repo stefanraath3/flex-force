@@ -3,14 +3,28 @@ import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import imgIcon from "@/assets/acd63578be10fe1abdcaf4a704714bd487c3d347.png";
 import imgUserThumb from "@/assets/76e64922e1fe212dc33bd59a0d1b1d30cef5aee8.png";
 import clsx from "clsx";
+import type { Page } from "@/app/App";
 
 interface SidebarProps {
   onClose?: () => void;
   onToggle?: () => void;
   collapsed?: boolean;
+  currentPage?: Page;
+  onPageChange?: (page: Page) => void;
 }
 
-export function Sidebar({ onClose, onToggle, collapsed }: SidebarProps) {
+export function Sidebar({
+  onClose,
+  onToggle,
+  collapsed,
+  currentPage = "recruitment",
+  onPageChange,
+}: SidebarProps) {
+  const handleNavClick = (page: Page) => {
+    onPageChange?.(page);
+    onClose?.();
+  };
+
   return (
     <div className="bg-[#fafafa] flex flex-col gap-6 h-full items-start overflow-y-auto relative shrink-0 w-[280px] p-6 scrollbar-thin">
       {/* Header */}
@@ -70,15 +84,31 @@ export function Sidebar({ onClose, onToggle, collapsed }: SidebarProps) {
         <p className="font-semibold text-[#a1a1aa] text-[12px] mb-1">
           MAIN MENU
         </p>
-        <NavItem icon={<Icons.Dashboard />} label="Dashboard" />
+        <NavItem
+          icon={<Icons.Dashboard />}
+          label="Dashboard"
+          active={currentPage === "dashboard"}
+          onClick={() => handleNavClick("dashboard")}
+        />
         <NavItem
           icon={<Icons.Recruitment />}
           label="Recruitment"
           count={14}
-          active
+          active={currentPage === "recruitment"}
+          onClick={() => handleNavClick("recruitment")}
         />
-        <NavItem icon={<Icons.Employees />} label="Employees" />
-        <NavItem icon={<Icons.Payroll />} label="Payroll" />
+        <NavItem
+          icon={<Icons.Employees />}
+          label="Employees"
+          active={currentPage === "employees"}
+          onClick={() => handleNavClick("employees")}
+        />
+        <NavItem
+          icon={<Icons.Payroll />}
+          label="Payroll"
+          active={currentPage === "payroll"}
+          onClick={() => handleNavClick("payroll")}
+        />
       </div>
 
       {/* Departments */}
@@ -126,16 +156,19 @@ function NavItem({
   label,
   count,
   active,
+  onClick,
 }: {
   icon: React.ReactNode;
   label: string;
   count?: number;
   active?: boolean;
+  onClick?: () => void;
 }) {
   return (
-    <div
+    <button
+      onClick={onClick}
       className={clsx(
-        "flex items-center justify-between w-full p-[12px] rounded-[12px] cursor-pointer transition-colors",
+        "flex items-center justify-between w-full p-[12px] rounded-[12px] cursor-pointer transition-colors text-left",
         active
           ? "bg-white shadow-sm border border-[#e4e4e7]"
           : "hover:bg-gray-100"
@@ -169,7 +202,7 @@ function NavItem({
           {count}
         </span>
       )}
-    </div>
+    </button>
   );
 }
 
