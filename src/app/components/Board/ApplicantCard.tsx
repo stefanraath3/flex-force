@@ -34,7 +34,7 @@ export function ApplicantCard({ applicant }: ApplicantCardProps) {
     <div
       ref={drag as unknown as React.LegacyRef<HTMLDivElement>}
       className={clsx(
-        "bg-white rounded-[12px] p-[10px] w-full shadow-sm border border-[#e4e4e7] hover:border-[#9440FF] transition-colors cursor-grab active:cursor-grabbing",
+        "bg-white rounded-[12px] p-[10px] w-full border border-[#e4e4e7] hover:border-[#9440FF] hover:shadow-sm transition-colors cursor-grab active:cursor-grabbing",
         isDragging ? "opacity-50" : "opacity-100"
       )}
     >
